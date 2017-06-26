@@ -9,7 +9,7 @@ from PIL import Image
 import pickle
 from show_image import img_show
 
-class MyNeuralNet:
+class ThreeLayerNet:
     def __init__(self, input_num, hidden_num1, hidden_num2, output_num):
         self.iun  = input_num
         self.hun1 = hidden_num1
@@ -46,29 +46,3 @@ class MyNeuralNet:
         z3 = softmax(a3)
 
         return z3
-
-def main():
-    # データセットのロード
-    (x_train, t_train), (x_test, t_test) = load_mnist(normalize=True, flatten=True, one_hot_label=False)
-    
-    # 28x28の画像を入力し、0-9の文字のいずれかを知りたい
-    network = MyNeuralNet(28*28, 50, 100, 10)
-
-    # パラメータをロード
-    with open("../dataset/sample_weight.pkl", 'rb') as f:
-        params = pickle.load(f)
-    network.set_params(params)
-
-    # 予測
-    while True:
-        randint = np.random.randint(x_test.shape[0])
-        x, t = x_test[randint], t_test[randint]
-        img_show(x.reshape(28, 28) * 255)
-
-        y_hat = np.argmax(network.forward(x))
-        print("predicted: {}".format(y_hat))
-        print("answer: {}".format(t))
-        sys.stdin.read(1)
-
-if __name__=="__main__":
-    main()
