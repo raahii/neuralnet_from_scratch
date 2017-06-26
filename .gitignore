@@ -1,0 +1,8 @@
+__pycache__
+*.pyc
+dataset/*
+!__init__.py
+!mnist.py
+!lena.png
+!lena_gray.png
+!sample_weight.pkl
