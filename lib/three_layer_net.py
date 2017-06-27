@@ -3,11 +3,10 @@
 import sys, os
 sys.path.append(os.pardir)
 import numpy as np
-from lib.common_functions import sigmoid, softmax
+from lib.common_functions import sigmoid, softmax, img_show
 from dataset.mnist import load_mnist
 from PIL import Image
 import pickle
-from show_image import img_show
 
 class ThreeLayerNet:
     def __init__(self, input_num, hidden_num1, hidden_num2, output_num):

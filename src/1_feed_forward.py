@@ -6,9 +6,8 @@ from PIL import Image
 import pickle
 
 from dataset.mnist import load_mnist
-from lib.common_functions import sigmoid, softmax
+from lib.common_functions import sigmoid, softmax, img_show
 from lib.three_layer_net import ThreeLayerNet
-from show_image import img_show
 
 # データセットのロード
 (x_train, t_train), (x_test, t_test) = load_mnist(normalize=True, flatten=True, one_hot_label=False)
