@@ -11,6 +11,7 @@
 - [ ] 3 layer neural network
 
   - [ ] feed-forward
+    - [ ] compare processing time for various batch-size
   - [ ] back-propagation
 
 - [ ] N layer neural network
