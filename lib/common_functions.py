@@ -61,30 +61,54 @@ def cross_entropy_error(y, t):
     if y.ndim == 1:
         y = y.reshape(1, y.size)
         t = t.reshape(1, t.size)
-        
+
     batch_size = y.shape[0]
-    return -np.sum(t * np.log(y)) / batch_size
+    delta = 1e-7
+    return -np.sum(t * np.log(y+delta)) / batch_size
 
 def numerical_diff(f, x):
     """
     数値微分
     """
     h = 1e-4
+    ret = np.zeros_like(x)
+    for i in range(x.size):
+        x_minus = np.copy(x)
+        x_minus[i] -= h
+        x_plus = np.copy(x)
+        x_plus[i] += h
+
+        ret[i] = (f(x_plus) - f(x_minus)) / (2*h)
+
+    return ret
+    
+def numerical_gradient(f, x):
+    """
+    数値微分を用いて勾配を計算する。
+    """
     
     if x.ndim == 1:
-        x = x.reshape(1, x.size)
+        return numerical_diff(f, x)
 
     ret = np.zeros_like(x)
     for i in range(x.shape[0]):
-        for j in range(x.shape[1]):
-            x_minus = np.copy(x[i])
-            x_minus[j] -= h
-            x_plus = np.copy(x[i])
-            x_plus[j] += h
-
-            ret[i][j] = (f(x_plus) - f(x_minus)) / (2*h)
+        ret[i,:] = numerical_diff(f, x[i])
 
     return ret
+
+def gradient_descent(f, init_params, lr = 0.01, step_num=100):
+    """
+    最急降下法
+    """
+    
+    params = init_params
+    
+    for _ in range(step_num):
+        grad = numerical_gradient(f, params)
+        params -= lr * grad
+        # print(params)
+
+    return params
 
 def main():
     # y = step_function(np.array([-1, 0, 1]))
