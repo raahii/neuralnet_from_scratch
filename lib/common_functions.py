@@ -26,7 +26,17 @@ def sigmoid(x):
     非線形関数で[0, 1]の範囲の連続値を取る。
     """
 
-    return 1. / (1 + np.exp(-x))
+    sigmoid_range = 34.538776394910684
+    np.clip(x, -sigmoid_range, sigmoid_range, out=x)
+
+    return 1.0 / (1.0 + np.exp(-x))
+
+def sigmoid_grad(x):
+    """
+    シグモイドの勾配関数
+    """
+
+    return sigmoid(x) * (1.0-sigmoid(x))
 
 def relu(x):
     """
@@ -35,16 +45,21 @@ def relu(x):
     # y = np.zeros_like(x)
     # y[ x > 0 ] = x[ x > 0 ]
 
-    return np.maximum(0., x)
+    return np.maximum(0, x)
 
 def softmax(x):
     """
     softmax関数。
     各クラスへの所属確率の大小を保ちつつ、確率として扱えるようにする（総和が1）。
     """
-    c = np.max(x)
-    exp_x = np.exp(x-c)
-    return exp_x / np.sum(exp_x)
+    if x.ndim == 2:
+        x = x.T
+        x = np.subtract(x, np.max(x, axis=0))
+        y = np.exp(x) / np.sum(np.exp(x), axis=0)
+        return y.T
+
+    x = x - np.max(x)
+    return np.exp(x) / np.sum(np.exp(x))
 
 def mean_squared_error(y, t):
     """
@@ -53,34 +68,35 @@ def mean_squared_error(y, t):
     return 0.5 * np.sum((y-t)**2)
 
 def cross_entropy_error(y, t):
-    """
-    交差エントロピー関数
-    one-hot表現であるため、正解のクラスのみ値が出る。
-    """
-
     if y.ndim == 1:
-        y = y.reshape(1, y.size)
         t = t.reshape(1, t.size)
-
+        y = y.reshape(1, y.size)
+        
+    # 教師データがone-hot-vectorの場合、正解ラベルのインデックスに変換
+    if t.size == y.size:
+        t = t.argmax(axis=1)
+             
     batch_size = y.shape[0]
-    delta = 1e-7
-    return -np.sum(t * np.log(y+delta)) / batch_size
+    return -np.sum(np.log(y[np.arange(batch_size), t])) / batch_size
 
 def numerical_diff(f, x):
     """
     数値微分
     """
     h = 1e-4
-    ret = np.zeros_like(x)
+    grad = np.zeros_like(x)
+
     for i in range(x.size):
-        x_minus = np.copy(x)
-        x_minus[i] -= h
-        x_plus = np.copy(x)
-        x_plus[i] += h
+        tmp_val = x[i]
+        x[i] = float(tmp_val) + h
+        fx_plus= f(x)
+        x[i] = float(tmp_val) - h
+        fx_minus = f(x)
+        
+        grad[i] = (fx_plus - fx_minus) / (2*h)
+        x[i] = tmp_val
 
-        ret[i] = (f(x_plus) - f(x_minus)) / (2*h)
-
-    return ret
+    return grad
     
 def numerical_gradient(f, x):
     """
