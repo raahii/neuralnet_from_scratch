@@ -54,7 +54,7 @@ def softmax(x):
     """
     if x.ndim == 2:
         x = x.T
-        x = np.subtract(x, np.max(x, axis=0))
+        x = x - np.max(x, axis=0)
         y = np.exp(x) / np.sum(np.exp(x), axis=0)
         return y.T
 
@@ -65,7 +65,8 @@ def mean_squared_error(y, t):
     """
     二乗和誤差関数
     """
-    return 0.5 * np.sum((y-t)**2)
+    batch_size = y.shape[0]
+    return 0.5/batch_size * np.sum((y-t)**2)
 
 def cross_entropy_error(y, t):
     if y.ndim == 1:
@@ -77,6 +78,7 @@ def cross_entropy_error(y, t):
         t = t.argmax(axis=1)
              
     batch_size = y.shape[0]
+
     return -np.sum(np.log(y[np.arange(batch_size), t])) / batch_size
 
 def numerical_diff(f, x):
