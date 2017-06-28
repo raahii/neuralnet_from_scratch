@@ -6,3 +6,5 @@ dataset/*
 !lena.png
 !lena_gray.png
 !sample_weight.pkl
+
+my_train_neuralnet.py

@@ -7,31 +7,26 @@ from lib.common_functions import *
 
 class MyNeuralNet:
     def __init__(self, cost_function = cross_entropy_error):
-
         self.cost_function = cost_function
         self.layers = []
 
     def add_layer(self, layer):
         self.layers.append(layer)
 
-    def set_params(self, trained_params):
-        """
-        set trained parameters
-        """
-        for key in trained_params.keys():
-            self.params[key] = trained_params[key]
-
     def loss(self, x, t):
         y = self.forward(x)
+
         return self.cost_function(y, t)
 
     def forward(self, x):
         y = x
         for layer in self.layers:
             y = layer.forward(y)
+
         return y
 
     def backword(self, x, t):
+
         return grads
 
     def accuracy(self, x, t):
