@@ -26,8 +26,8 @@ def sigmoid(x):
     非線形関数で[0, 1]の範囲の連続値を取る。
     """
 
-    sigmoid_range = 34.538776394910684
-    np.clip(x, -sigmoid_range, sigmoid_range, out=x)
+    # sigmoid_range = 34.538776394910684
+    # np.clip(x, -sigmoid_range, sigmoid_range, out=x)
 
     return 1.0 / (1.0 + np.exp(-x))
 
