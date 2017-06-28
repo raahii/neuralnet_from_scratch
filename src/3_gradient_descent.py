@@ -9,20 +9,20 @@ from tqdm import tqdm
 import pickle
 
 from dataset.mnist import load_mnist
-from lib.common_functions import sigmoid, softmax, img_show
+from lib.common_functions import *
 from lib.three_layer_net import ThreeLayerNet
 
 # データセットのロード
-(x_train, t_train), (x_test, t_test) = load_mnist(normalize=True, one_hot_label=True)
+(x_train, t_train), (x_test, t_test) = load_mnist(normalize=True, flatten=True, one_hot_label=True)
 
 # 28x28の画像を入力し、0-9の文字のいずれかを知りたい
-network = ThreeLayerNet(28*28, 50, 100, 10)
+network = ThreeLayerNet(input_size=28*28, hidden_size1=50, hidden_size2=100, output_size=10)
 
 # 学習
 iter_num = 10000
 batch_size = 100
 train_size = x_train.shape[0]
-lr = 10
+lr = 0.1
 
 loss_list = []
 
@@ -32,15 +32,13 @@ for i in range(iter_num):
     t_batch = t_train[batch_mask]
     grads = network.numerical_gradient(x_batch, t_batch)
 
-    for key in {"W1", "W2", "b1", "b2"}:
+    for key in {"W1", "W2", "W3", "b1", "b2", "b3"}:
         network.params[key] -= lr * grads[key]
 
     loss = network.loss(x_batch, t_batch)
-    print(loss)
-    print(network.accuracy(x_train, t_train))
-    print("")
     loss_list.append(loss)
-
+    
+    # realtime plot
     plt.clf()
     x = np.array(range(1, len(loss_list)+1))
     plt.plot(x, loss_list)

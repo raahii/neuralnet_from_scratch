@@ -4,27 +4,21 @@ import sys, os
 sys.path.append(os.pardir)
 import numpy as np
 from lib.common_functions import *
-from dataset.mnist import load_mnist
-from PIL import Image
-import pickle
 
 class ThreeLayerNet:
-    def __init__(self, input_num, hidden_num1, hidden_num2, output_num,\
+    def __init__(self, input_size, hidden_size1, hidden_size2, output_size,
                        cost_function = cross_entropy_error,
                        weight_init_std = 0.01):
-        self.iun  = input_num
-        self.hun1 = hidden_num1
-        self.hun2 = hidden_num2
-        self.oun  = output_num
+
         self.cost_function = cost_function
     
         self.params = {}
-        self.params['W1'] = weight_init_std * np.random.randn(self.iun, self.hun1)
-        self.params['W2'] = weight_init_std * np.random.randn(self.hun1, self.hun2)
-        self.params['W3'] = weight_init_std * np.random.randn(self.hun2, self.oun)
-        self.params['b1'] = np.zeros(self.hun1, )
-        self.params['b2'] = np.zeros(self.hun2, )
-        self.params['b3'] = np.zeros(self.oun, )
+        self.params['W1'] = weight_init_std * np.random.randn(input_size, hidden_size1)
+        self.params['W2'] = weight_init_std * np.random.randn(hidden_size1, hidden_size2)
+        self.params['W3'] = weight_init_std * np.random.randn(hidden_size2, output_size)
+        self.params['b1'] = np.zeros(hidden_size1, )
+        self.params['b2'] = np.zeros(hidden_size2, )
+        self.params['b3'] = np.zeros(output_size, )
 
     def set_params(self, trained_params):
         for key in trained_params.keys():
@@ -55,10 +49,13 @@ class ThreeLayerNet:
     def forward(self, x):
         W1, W2, W3 = self.params['W1'], self.params['W2'], self.params['W3']
         b1, b2, b3 = self.params['b1'], self.params['b2'], self.params['b3']
+
         a1 = np.dot(x, W1) + b1
-        z1 = sigmoid(a1)
+        # z1 = sigmoid(a1)
+        z1 = relu(a1)
         a2 = np.dot(z1, W2) + b2
-        z2 = sigmoid(a2)
+        # z2 = sigmoid(a2)
+        z2 = relu(a2)
         a3 = np.dot(z2, W3) + b3
         z3 = softmax(a3)
 
@@ -67,31 +64,36 @@ class ThreeLayerNet:
     def backword(self, x, t):
         W1, W2, W3 = self.params['W1'], self.params['W2'], self.params['W3']
         b1, b2, b3 = self.params['b1'], self.params['b2'], self.params['b3']
-        if np.isinf(b1).any() or np.isnan(b1).any():
-            import pdb; pdb.set_trace()
 
         a1 = np.dot(x, W1) + b1
-        z1 = sigmoid(a1)
+        # z1 = sigmoid(a1)
+        z1 = relu(a1)
         a2 = np.dot(z1, W2) + b2
-        z2 = sigmoid(a2)
+        # z2 = sigmoid(a2)
+        z2 = relu(a2)
         a3 = np.dot(z2, W3) + b3
         y = softmax(a3)
 
         grads = {}
-
-        batch_size = t.shape[0]
-        dout = (y - t) / batch_size
-
-        grads["W3"] = np.dot(z2.T, dout)
-        grads["b3"] = np.sum(dout, axis = 0)
-        dz2 = np.dot(dout, W3.T)
         
-        da2 = dz2 * (1.0 - z2) * z2
+        dz3 = 1 # dout
+        batch_size = t.shape[0]
+        da3 = dz3 * (y - t) / batch_size
+
+        grads["W3"] = np.dot(z2.T, da3)
+        grads["b3"] = np.sum(da3, axis = 0)
+        dz2 = np.dot(da3, W3.T)
+        
+        # da2 = dz2 * (1.0 - z2) * z2
+        da2 = dz2.copy()
+        da2[ a2 <= 0 ] = 0
         grads["W2"] = np.dot(z1.T, da2)
         grads["b2"] = np.sum(da2, axis = 0)
         dz1 = np.dot(da2, W2.T)
 
-        da1 = dz1 * (1.0 - z1) * z1
+        # da1 = dz1 * (1.0 - z1) * z1
+        da1 = dz1.copy()
+        da1[ a1 <= 0 ] = 0
         grads["W1"] = np.dot(x.T, da1)
         grads["b1"] = np.sum(da1, axis = 0)
 

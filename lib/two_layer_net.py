@@ -9,7 +9,7 @@ from PIL import Image
 import pickle
 
 class TwoLayerNet:
-    def __init__(self, input_size, hidden_size, output_size,\
+    def __init__(self, input_size, hidden_size, output_size,
                        cost_function = cross_entropy_error,
                        weight_init_std = 0.01):
         self.input_size  = input_size
