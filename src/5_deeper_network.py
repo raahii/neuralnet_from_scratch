@@ -18,10 +18,10 @@ plt.style.use("ggplot")
 network = MyNeuralNet(cross_entropy_error)
 
 # レイヤを追加
-network.add_layer(Affine(28*28, 50, Relu()))
-network.add_layer(Affine(50, 100, Relu()))
-network.add_layer(Affine(100, 20, Sigmoid()))
-network.add_layer(Affine(20, 10, Softmax()))
+network.add_layer(Affine(28*28, 50 , Relu()   , "he"))
+network.add_layer(Affine(50   , 100, Relu()   , "he"))
+network.add_layer(Affine(100  , 20 , Relu()   , "he"))
+network.add_layer(Affine(20   , 10 , Softmax(), "he"))
 
 # 学習
 train_size = x_train.shape[0]

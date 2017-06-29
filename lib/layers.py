@@ -14,7 +14,7 @@ class Affine:
         self.dW = None
         self.db = None
         self.x  = None
-        self.activate_function = activate_function
+        self.activate_functions = np.array([activate_function]).flatten()
 
     def init_params(self, method_name):
         coeffs = {
@@ -29,11 +29,15 @@ class Affine:
     def forward(self, x):
         self.x = x
         y = np.dot(self.x, self.W) + self.b
+        
+        for af in self.activate_functions:
+            y = af.forward(y)
 
-        return self.activate_function.forward(y)
+        return y
 
     def backward(self, dy):
-        dy = self.activate_function.backward(dy)
+        for af in reversed(self.activate_functions):
+            dy = af.backward(dy)
 
         self.dW = np.dot(self.x.T, dy)
         self.db = np.sum(dy, axis=0)

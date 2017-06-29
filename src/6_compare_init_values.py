@@ -78,7 +78,7 @@ for i in range(iters_num):
                 plt.title("{}-layer".format(column+1))
 
                 colors = ["r", "g", "b"]
-                plt.hist(layer.activate_function.y.flatten(), bins=30, color=colors[row])
+                plt.hist(layer.activate_functions[-1].y.flatten(), bins=30, color=colors[row])
 
         plt.draw()
         plt.pause(0.05)
