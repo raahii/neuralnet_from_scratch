@@ -73,7 +73,11 @@ class BatchNormalization:
         self.dgamma = None
 
     def forward(self, x, train_flg=True):
-        self.x = x
+        if x.ndim != 2:
+            self.x = x.reshape(x.shape[0], -1)
+        else:
+            self.x = x
+
         self.batch_size = x.shape[0]
         self.input_dim = x.shape[1]
 
@@ -91,16 +95,17 @@ class BatchNormalization:
 
     def backward(self, dy):
         self.dbeta = np.sum(dy)
-        self.dgamma = np.sum(self.x * dy, axis = 0)
+        self.dgamma = np.sum(self.x_norm * dy, axis = 0)
 
         dx_norm = dy * self.gamma
 
         dxc = dx_norm / self.std
-        dstd = -np.sum((dx_norm * self.xc) / (self.std * self.std), axis=0)
+        dstd = -np.sum(dx_norm * self.xc / (self.std * self.std), axis=0)
         dvar = 0.5 * dstd / self.std
-        dxc += (2.0 / self.batch_size) * self.xc * dvar
+        dxc += 2.0 / self.batch_size * self.xc * dvar
         dmu = np.sum(dxc, axis=0)
         dx = dxc - dmu / self.batch_size
+        # dx = dxc * ( 1.0 - 1.0 / self.batch_size)
 
         # TODO: should refactor design
         self.gamma -= self.lr * self.dgamma
@@ -139,7 +144,7 @@ class Pooling:
 
         Y = np.max(X, axis = 1)
         y = Y.reshape(BS, OH, OW, C).transpose(0, 3, 1, 2)
-        
+
         return y
 
     def backward(self, dy):

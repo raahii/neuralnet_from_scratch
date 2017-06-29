@@ -18,6 +18,8 @@ class Affine:
         self.x  = None
         self.activation_functions = np.array([activation_function]).flatten()
 
+        self.org_shape = None
+
     def init_params(self, method_name):
         coeffs = {
                 "gaussian": 0.01,
@@ -29,7 +31,9 @@ class Affine:
                np.random.randn(self.input_size, self.output_size)
 
     def forward(self, x, train_flg=True):
-        self.x = x
+        self.org_shape = x.shape
+        self.x = x.reshape(x.shape[0], -1)
+
         y = np.dot(self.x, self.W) + self.b
         
         for af in self.activation_functions:
@@ -38,9 +42,6 @@ class Affine:
         return y
 
     def backward(self, dy):
-        org_shape = x.shape
-        self.x = to_ndim(x, 2)
-
         for af in reversed(self.activation_functions):
             dy = af.backward(dy)
 
@@ -49,7 +50,7 @@ class Affine:
 
         dx = np.dot(dy, self.W.T)
 
-        return y.reshape(org_shape)
+        return dx
 
     def set_params(self, W, b):
         self.W = W
