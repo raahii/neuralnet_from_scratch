@@ -128,6 +128,27 @@ def gradient_descent(f, init_params, lr = 0.01, step_num=100):
 
     return params
 
+def gaussian_init(input_size, output_size):
+    """
+    ガウス分布から取ってきたランダム値で初期化した
+    パラメータを返す
+    """
+
+    return 0.01 * np.random.randn(input_size, output_size)
+
+def xavier_init(input_size, output_size):
+    """
+    Xavierの初期値で初期化したパラメータを返す
+    """
+
+    return np.sqrt(input_size) * np.random.randn(input_size, output_size)
+
+def he_init(input_size, output_size):
+    """
+    Heの初期値で初期化したパラメータを返す
+    """
+
+    return np.sqrt(input_size) * np.random.randn(input_size, output_size)
 def main():
     # y = step_function(np.array([-1, 0, 1]))
     # print(y)
