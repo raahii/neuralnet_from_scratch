@@ -8,3 +8,4 @@ dataset/*
 !sample_weight.pkl
 
 my_train_neuralnet.py
+personal

@@ -8,7 +8,7 @@
 
 ## マイルストーン
 
-- [ ] 3 layer neural network
+- [x] 3 layer neural network
 
   - [x] feed-forward
 
@@ -16,9 +16,9 @@
   
   - [x] gradient descent
   
-  - [ ] back-propagation
+  - [x] back-propagation
 
-- [ ] N layer neural network
+- [x] N layer neural network
   
 - [ ] Convolutional neural network
 

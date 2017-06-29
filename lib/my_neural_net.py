@@ -27,7 +27,7 @@ class MyNeuralNet:
         dy = y - t
 
         for layer in reversed(self.layers):
-            dy, dW, db = layer.backward(dy)
+            dy = layer.backward(dy)
 
     def accuracy(self, x, t):
         y = np.argmax(self.forward(x), 1)

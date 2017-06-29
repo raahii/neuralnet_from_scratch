@@ -1,4 +1,4 @@
-#speed coding : utf-8
+# coding : utf-8
 import sys, os
 sys.path.append(os.pardir)
 from dataset.mnist import load_mnist
@@ -19,15 +19,17 @@ network = MyNeuralNet(cross_entropy_error)
 
 # レイヤを追加
 network.add_layer(Affine(28*28, 50, Relu()))
-network.add_layer(Affine(50, 10, Softmax()))
+network.add_layer(Affine(50, 100, Relu()))
+network.add_layer(Affine(100, 20, Sigmoid()))
+network.add_layer(Affine(20, 10, Softmax()))
 
 # 学習
-train_size = x_test.shape[0]
+train_size = x_train.shape[0]
 batch_size = 100
 
-iter_per_epoch = max(train_size / batch_size, 1)
+iter_per_epoch = max(int(train_size / batch_size), 1)
 
-iters_num = 10000
+iters_num = iter_per_epoch * 300
 learning_rate = 0.1
 
 plt.figure(figsize=(12,8))

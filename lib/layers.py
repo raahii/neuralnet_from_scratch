@@ -5,6 +5,8 @@ from lib.common_functions import sigmoid, softmax, relu
 
 class Affine:
     def __init__(self, input_size, output_size, activate_function, weight_init_std = 0.01):
+        self.input_size = input_size
+        self.output_size = output_size
         self.W = weight_init_std * np.random.randn(input_size, output_size)
         self.b = np.zeros(output_size)
 
@@ -27,7 +29,7 @@ class Affine:
 
         dx = np.dot(dy, self.W.T)
 
-        return dx, self.dW.copy(), self.db.copy()
+        return dx
 
     def set_params(self, W, b):
         self.W = W
