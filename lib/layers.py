@@ -19,7 +19,7 @@ class Affine:
     def init_params(self, method_name):
         coeffs = {
                 "gaussian": 0.01,
-                "xavier"  : np.sqrt(self.input_size),
+                "xavier"  : 1.0 / np.sqrt(self.input_size),
                 "he"      : np.sqrt(2.0 / self.input_size),
                 }
 

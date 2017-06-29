@@ -15,14 +15,19 @@ plt.style.use("ggplot")
 (x_train, t_train), (x_test, t_test) = load_mnist(normalize=True, flatten=True, one_hot_label=True)
 
 # 28x28の画像を入力し、0-9の文字のいずれかを知りたい
-network = MyNeuralNet(cross_entropy_error)
+networks = {
+            "gaussian": MyNeuralNet(cross_entropy_error),
+            "xavier": MyNeuralNet(cross_entropy_error),
+            "he": MyNeuralNet(cross_entropy_error),
+           }
 
 # レイヤを追加
-network.add_layer(Affine(28*28, 100, Sigmoid()))
-network.add_layer(Affine(100,   100, Sigmoid()))
-network.add_layer(Affine(100,   100, Sigmoid()))
-network.add_layer(Affine(100,   100, Sigmoid()))
-network.add_layer(Affine(100,   10 , Softmax()))
+for method_name, network in networks.items():
+    network.add_layer(Affine(28*28, 100, Sigmoid(), method_name))
+    network.add_layer(Affine(100,   100, Sigmoid(), method_name))
+    network.add_layer(Affine(100,   100, Sigmoid(), method_name))
+    network.add_layer(Affine(100,   100, Sigmoid(), method_name))
+    network.add_layer(Affine(100,   10 , Softmax(), method_name))
 
 # 学習
 train_size = x_train.shape[0]
@@ -38,44 +43,42 @@ train_acc_list = []
 test_acc_list = []
 sum_loss = 0.0
 
-plt.figure(figsize=(16,4))
+plt.figure(figsize=(14,8))
 for i in range(iters_num):
     batch_mask = np.random.choice(train_size, batch_size)
     
     x = x_train[batch_mask]
     t = t_train[batch_mask]
-
-    y = network.forward(x)
-    network.backward(y, t)
-
-    for layer in network.layers:
-        layer.W -= learning_rate * layer.dW
-        layer.b -= learning_rate * layer.db
     
-    sum_loss += network.loss(y, t)
+    for network in networks.values():
+        y = network.forward(x)
+        network.backward(y, t)
+
+        for layer in network.layers:
+            layer.W -= learning_rate * layer.dW
+            layer.b -= learning_rate * layer.db
 
     if i % iter_per_epoch == 0:
-        loss_list.append(sum_loss / iter_per_epoch)
-        sum_loss = 0
-
-        train_acc = network.accuracy(x_train, t_train)
-        test_acc = network.accuracy(x_test, t_test)
-        train_acc_list.append(train_acc)
-        test_acc_list.append(test_acc)
-        print(int(i/iter_per_epoch), ":", train_acc, test_acc)
+        print("--- epoch {} ---".format(int(i/iter_per_epoch)))
 
         plt.clf()
-        # x = np.array(range(1, len(loss_list)+1))
-        # plt.plot(x, loss_list)
-        # plt.xlabel("epoch")
-        # plt.ylabel("loss")
-        
-        plt.suptitle("init param to gaussian random number")
-        for i, layer in enumerate(network.layers[0:-1]):
-            # import pdb; pdb.set_trace()
-            plt.subplot(1, len(network.layers)-1, i+1)
-            plt.title("{}-layer".format(i+1))
-            plt.hist(layer.activate_function.y.flatten(), bins=30)
+        rows_num = len(networks.keys())
+        columns_num = len(networks["gaussian"].layers)-1
+
+        for row, n in enumerate(networks.items()):
+            method_name, network = n
+
+            train_acc = network.accuracy(x_train, t_train)
+            test_acc = network.accuracy(x_test, t_test)
+            print(method_name, ":", train_acc, test_acc)
+
+            for column, layer in enumerate(network.layers[0:-1]):
+                plt.subplot(rows_num, columns_num, columns_num*(row) + column+1)
+                # plt.suptitle(method_name)
+                plt.title("{}-layer".format(column+1))
+
+                colors = ["r", "g", "b"]
+                plt.hist(layer.activate_function.y.flatten(), bins=30, color=colors[row])
 
         plt.draw()
         plt.pause(0.05)
