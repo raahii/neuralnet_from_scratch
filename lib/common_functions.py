@@ -149,6 +149,7 @@ def he_init(input_size, output_size):
     """
 
     return np.sqrt(input_size) * np.random.randn(input_size, output_size)
+
 def main():
     # y = step_function(np.array([-1, 0, 1]))
     # print(y)
