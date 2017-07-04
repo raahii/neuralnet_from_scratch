@@ -19,7 +19,7 @@ class MyNeuralNet:
     def forward(self, x):
         y = x
         for layer in self.layers:
-            y = layer.forward(y)
+            y = layer.forward(y, train_flg=True)
 
         return y
 

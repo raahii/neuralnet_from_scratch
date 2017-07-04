@@ -26,7 +26,7 @@ class Affine:
         return coeffs[method_name] * \
                np.random.randn(self.input_size, self.output_size)
 
-    def forward(self, x):
+    def forward(self, x, train_flg=True):
         self.x = x
         y = np.dot(self.x, self.W) + self.b
         

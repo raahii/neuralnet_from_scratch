@@ -10,7 +10,7 @@ class Sigmoid:
         self.x = None
         self.y = None
 
-    def forward(self, x):
+    def forward(self, x, train_flg=True):
         self.x = x
         self.y = sigmoid(x)
 
@@ -26,7 +26,7 @@ class Relu:
         self.x = None
         self.y = None
 
-    def forward(self, x):
+    def forward(self, x, train_flg=True):
         self.x = x
         self.y = relu(self.x)
 
@@ -42,7 +42,7 @@ class Softmax:
     def __init__(self):
         self.x = None
 
-    def forward(self, x):
+    def forward(self, x, train_flg=True):
         self.x = x
         y = softmax(self.x)
 
@@ -71,7 +71,7 @@ class BatchNormalization:
         self.dbeta  = None
         self.dgamma = None
 
-    def forward(self, x):
+    def forward(self, x, train_flg=True):
         self.x = x
         self.batch_size = x.shape[0]
         self.input_dim = x.shape[1]
@@ -106,3 +106,17 @@ class BatchNormalization:
         self.beta  -= self.lr * self.dbeta
         
         return dx
+
+class Dropout:
+    def __init__(self, dropout_rate=0.5):
+        self.dropout_rate = dropout_rate
+
+    def forward(self, x, train_flg=True):
+        if train_flg:
+            self.mask = np.random.rand(*x.shape) > self.dropout_rate
+            return x * self.mask
+        else:
+            return x * (1.0 - self.dropout_rate)
+    
+    def backward(self, dy):
+        return dy * self.mask
