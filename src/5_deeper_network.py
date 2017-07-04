@@ -5,7 +5,7 @@ from dataset.mnist import load_mnist
 from lib.common_functions import cross_entropy_error
 from lib.my_neural_net import MyNeuralNet
 from lib.layers import Affine
-from lib.activate_functions import Sigmoid, Softmax, Relu
+from lib.activation_functions import Sigmoid, Softmax, Relu
 
 import numpy as np
 import matplotlib.pyplot as plt

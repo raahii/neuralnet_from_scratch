@@ -4,8 +4,8 @@ import numpy as np
 from lib.common_functions import sigmoid, softmax, relu, gaussian_init
 
 class Affine:
-    def __init__(self, input_size, output_size, activate_function,
-                 init_method="gaussian"):
+    def __init__(self, input_size, output_size, activation_function,
+                 init_method="gaussian", train_flg = True):
         self.input_size = input_size
         self.output_size = output_size
         self.W = self.init_params(init_method)
@@ -14,7 +14,7 @@ class Affine:
         self.dW = None
         self.db = None
         self.x  = None
-        self.activate_functions = np.array([activate_function]).flatten()
+        self.activation_functions = np.array([activation_function]).flatten()
 
     def init_params(self, method_name):
         coeffs = {
@@ -30,13 +30,13 @@ class Affine:
         self.x = x
         y = np.dot(self.x, self.W) + self.b
         
-        for af in self.activate_functions:
+        for af in self.activation_functions:
             y = af.forward(y)
 
         return y
 
     def backward(self, dy):
-        for af in reversed(self.activate_functions):
+        for af in reversed(self.activation_functions):
             dy = af.backward(dy)
 
         self.dW = np.dot(self.x.T, dy)

@@ -5,7 +5,7 @@ from dataset.mnist import load_mnist
 from lib.common_functions import cross_entropy_error
 from lib.my_neural_net import MyNeuralNet
 from lib.layers import Affine
-from lib.activate_functions import Sigmoid, Softmax, Relu
+from lib.activation_functions import Sigmoid, Softmax, Relu
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -78,7 +78,7 @@ for i in range(iters_num):
                 plt.title("{}-layer".format(column+1))
 
                 colors = ["r", "g", "b"]
-                plt.hist(layer.activate_functions[-1].y.flatten(), bins=30, color=colors[row])
+                plt.hist(layer.activation_functions[-1].y.flatten(), bins=30, color=colors[row])
 
         plt.draw()
         plt.pause(0.05)
