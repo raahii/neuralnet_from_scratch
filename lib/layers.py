@@ -49,3 +49,38 @@ class Affine:
     def set_params(self, W, b):
         self.W = W
         self.b = b
+
+class Conv:
+    def __init__(self, W, b, stride=1, padding=0,
+                 activation_function, train_flg = True):
+
+        self.W = W
+        self.b = b
+
+        self.S = stride
+        self.P = padding
+
+        self.dW = None
+        self.db = None
+        self.x  = None
+
+    def forward(self, x):
+        BS, IC, IH, IW = x.shape
+        FN, C, FH, FW  = self.W.shape
+        OH = int( (IH+2*self.P-FH) / self.S + 1 )
+        OW = int( (IW+2*self.P-FW) / self.S + 1 )
+        
+        # forward
+        X = im2col(x, FH, FW, self.S, self.P)
+        W = self.W.reshape(FN, -1)
+        Y = np.dot(X, W) + self.b
+        y = Y.reshape(BS, OW, OH, -1).transpose(0, 3, 1, 2)
+
+        # apply avtivation functions
+        for af in self.activation_functions:
+            y = af.forward(y)
+
+        return y
+
+    def backward(self, dy):
+        pass

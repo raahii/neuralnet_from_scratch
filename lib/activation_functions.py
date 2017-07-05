@@ -120,3 +120,29 @@ class Dropout:
     
     def backward(self, dy):
         return dy * self.mask
+
+class Pooling:
+    def __init__(self, FH, FW, stride=1, padding=0):
+        self.FH = FH
+        self.FW = FW
+        self.S = stride
+        self.P = padding
+
+    def forward(self, x):
+        BS, C, IH, IW = x.shape
+        OH = int( (IH+2*self.P-FH) / self.S + 1 )
+        OW = int( (IW+2*self.P-FW) / self.S + 1 )
+
+        X = im2col(x, self.FH, self.FW, self.S, self.P)
+            .reshape(-1, FW*FH)
+
+        Y = np.max(X, axis = 1)
+        y = Y.reshape(BS, OH, OW, C).transpose(0, 3, 1, 2)
+
+        return y
+    
+    def backward(self, dy):
+        pass
+
+
+
