@@ -2,6 +2,7 @@
 
 import numpy as np
 from lib.common_functions import sigmoid, softmax, relu, gaussian_init
+from lib.utils import im2col
 
 class Affine:
     def __init__(self, input_size, output_size, activation_function,
@@ -51,20 +52,34 @@ class Affine:
         self.b = b
 
 class Conv:
-    def __init__(self, W, b, stride=1, padding=0,
-                 activation_function, train_flg = True):
+    def __init__(self, activation_function,
+                 input_shape,
+                 filter_shape, stride=1, padding=0,
+                 init_method="gaussian", train_flg = True):
+        
+        self.C, self.IH, self.IW = input_shape
+        self.FN, self.C, self.FH, self.FW = filter_shape
 
-        self.W = W
-        self.b = b
-
+        self.W = self.init_params(init_method)
+        self.b = np.zeros(self.FN)
         self.S = stride
         self.P = padding
+
+        self.activation_functions = np.array([activation_function]).flatten()
 
         self.dW = None
         self.db = None
         self.x  = None
 
-    def forward(self, x):
+    def init_params(self, method_name):
+        coeffs = {
+                "gaussian": 0.01,
+                }
+        gaussian_rands = np.random.randn(self.FN, self.C, self.FH, self.FW)
+
+        return coeffs[method_name] * gaussian_rands
+
+    def forward(self, x, train_flg=True):
         BS, IC, IH, IW = x.shape
         FN, C, FH, FW  = self.W.shape
         OH = int( (IH+2*self.P-FH) / self.S + 1 )
@@ -72,7 +87,7 @@ class Conv:
         
         # forward
         X = im2col(x, FH, FW, self.S, self.P)
-        W = self.W.reshape(FN, -1)
+        W = self.W.reshape(-1, FN)
         Y = np.dot(X, W) + self.b
         y = Y.reshape(BS, OW, OH, -1).transpose(0, 3, 1, 2)
 

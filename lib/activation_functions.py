@@ -4,6 +4,7 @@ import sys, os
 sys.path.append(os.pardir)
 import numpy as np
 from lib.common_functions import *
+from lib.utils import im2col
 
 class Sigmoid:
     def __init__(self):
@@ -130,11 +131,11 @@ class Pooling:
 
     def forward(self, x):
         BS, C, IH, IW = x.shape
-        OH = int( (IH+2*self.P-FH) / self.S + 1 )
-        OW = int( (IW+2*self.P-FW) / self.S + 1 )
+        OH = int( (IH+2*self.P-self.FH) / self.S + 1 )
+        OW = int( (IW+2*self.P-self.FW) / self.S + 1 )
 
-        X = im2col(x, self.FH, self.FW, self.S, self.P)
-            .reshape(-1, FW*FH)
+        X = im2col(x, self.FH, self.FW, self.S, self.P)\
+            .reshape(-1, self.FW*self.FH)
 
         Y = np.max(X, axis = 1)
         y = Y.reshape(BS, OH, OW, C).transpose(0, 3, 1, 2)
