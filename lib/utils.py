@@ -12,6 +12,22 @@ def img_show(img):
     pil_img = Image.fromarray(np.uint8(img))
     pil_img.show()
 
+def to_ndim(x, dim):
+    """
+    配列の次元を変換する
+
+    ex)
+    a.shape             # => (10,)
+    to_ndim(a, 2).shape # => (1, 10)
+    """
+    if dim == s.ndim:
+        return x
+    elif dim > s.ndim:
+        to_shape = (tuple([1]*dim) + x.shape)[-dim:]
+    else:
+        to_shape = x.shape[0:dim-1] + (-1,)
+
+    return x.reshape(to_shape)
 
 def im2col(input_data, filter_h, filter_w, stride=1, pad=0):
     """

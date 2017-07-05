@@ -1,12 +1,13 @@
 # coding : utf-8
 
 import numpy as np
-from lib.common_functions import sigmoid, softmax, relu, gaussian_init
+from lib.common_functions import sigmoid, softmax, relu
 from lib.utils import im2col
 
 class Affine:
     def __init__(self, input_size, output_size, activation_function,
-                 init_method="gaussian", train_flg = True):
+                 init_method="gaussian"):
+
         self.input_size = input_size
         self.output_size = output_size
         self.W = self.init_params(init_method)
@@ -37,6 +38,9 @@ class Affine:
         return y
 
     def backward(self, dy):
+        org_shape = x.shape
+        self.x = to_ndim(x, 2)
+
         for af in reversed(self.activation_functions):
             dy = af.backward(dy)
 
@@ -45,7 +49,7 @@ class Affine:
 
         dx = np.dot(dy, self.W.T)
 
-        return dx
+        return y.reshape(org_shape)
 
     def set_params(self, W, b):
         self.W = W
@@ -53,11 +57,11 @@ class Affine:
 
 class Conv:
     def __init__(self, activation_function,
-                 input_shape,
+                 # input_shape,
                  filter_shape, stride=1, padding=0,
                  init_method="gaussian", train_flg = True):
         
-        self.C, self.IH, self.IW = input_shape
+        # self.C, self.IH, self.IW = input_shape
         self.FN, self.C, self.FH, self.FW = filter_shape
 
         self.W = self.init_params(init_method)
@@ -95,7 +99,9 @@ class Conv:
         for af in self.activation_functions:
             y = af.forward(y)
 
-        return y
+        return y.reshape(BS, -1)
 
     def backward(self, dy):
+        # for af in reversed(self.activation_functions):
+        #     dy = af.backward(dy)
         pass

@@ -139,7 +139,7 @@ class Pooling:
 
         Y = np.max(X, axis = 1)
         y = Y.reshape(BS, OH, OW, C).transpose(0, 3, 1, 2)
-
+        
         return y
 
     def backward(self, dy):
