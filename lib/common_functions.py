@@ -1,15 +1,6 @@
 # coding:utf-8
+
 import numpy as np
-from PIL import Image
-
-def img_show(img):
-    """
-    PILで画像を表示する
-    そのまま画素配列を渡せばよい
-    """
-
-    pil_img = Image.fromarray(np.uint8(img))
-    pil_img.show()
 
 def step_function(x):
     """

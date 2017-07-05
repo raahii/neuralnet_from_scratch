@@ -91,7 +91,7 @@ class BatchNormalization:
     def backward(self, dy):
         self.dbeta = np.sum(dy)
         self.dgamma = np.sum(self.x * dy, axis = 0)
-        
+
         dx_norm = dy * self.gamma
 
         dxc = dx_norm / self.std
@@ -100,11 +100,11 @@ class BatchNormalization:
         dxc += (2.0 / self.batch_size) * self.xc * dvar
         dmu = np.sum(dxc, axis=0)
         dx = dxc - dmu / self.batch_size
-        
+
         # TODO: should refactor design
         self.gamma -= self.lr * self.dgamma
         self.beta  -= self.lr * self.dbeta
-        
+
         return dx
 
 class Dropout:
@@ -117,7 +117,7 @@ class Dropout:
             return x * self.mask
         else:
             return x * (1.0 - self.dropout_rate)
-    
+
     def backward(self, dy):
         return dy * self.mask
 
@@ -140,9 +140,6 @@ class Pooling:
         y = Y.reshape(BS, OH, OW, C).transpose(0, 3, 1, 2)
 
         return y
-    
+
     def backward(self, dy):
         pass
-
-
-

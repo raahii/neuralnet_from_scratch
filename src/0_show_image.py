@@ -3,7 +3,7 @@ import sys, os
 sys.path.append(os.pardir)
 import numpy as np
 from dataset.mnist import load_mnist
-from lib.common_functions import img_show
+from lib.utils import img_show
 
 def main():
     (x_train, t_train), (x_test, t_test) = load_mnist(flatten=True, normalize=False)

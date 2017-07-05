@@ -6,7 +6,8 @@ from PIL import Image
 import pickle
 
 from dataset.mnist import load_mnist
-from lib.common_functions import sigmoid, softmax, img_show
+from lib.common_functions import sigmoid, softmax
+from lib.utils import img_show
 from lib.three_layer_net import ThreeLayerNet
 
 # データセットのロード
