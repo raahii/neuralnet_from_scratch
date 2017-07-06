@@ -4,6 +4,7 @@ import sys, os
 sys.path.append(os.pardir)
 import numpy as np
 from tqdm import tqdm
+import matplotlib.pyplot as plt
 
 from dataset.mnist import load_mnist
 from lib.my_neural_net import MyNeuralNet
@@ -50,13 +51,14 @@ batch_size = 100
 
 iter_per_epoch = max(int(train_size / batch_size), 1)
 
-iters_num = iter_per_epoch * 300
+iters_num = iter_per_epoch * 100
 learning_rate = 0.1
 
-# plt.figure(figsize=(12,8))
-# loss_list = []
-# train_acc_list = []
-# test_acc_list = []
+plt.style.use("ggplot")
+plt.figure(figsize=(12,8))
+loss_list = []
+train_acc_list = []
+test_acc_list = []
 
 for i in tqdm(range(iters_num)):
     batch_mask = np.random.choice(train_size, batch_size)
@@ -65,25 +67,46 @@ for i in tqdm(range(iters_num)):
     t = t_train[batch_mask]
 
     y = network.forward(x)
-    # network.backward(y, t)
-    #
-    # for layer in network.layers:
-    #     layer.W -= learning_rate * layer.dW
-    #     layer.b -= learning_rate * layer.db
-    #
-    # loss_list.append(network.loss(y, t))
-    #
-    # if i % iter_per_epoch == 0:
-    #     train_acc = network.accuracy(x_train, t_train)
-    #     test_acc = network.accuracy(x_test, t_test)
-    #     train_acc_list.append(train_acc)
-    #     test_acc_list.append(test_acc)
-    #     print(train_acc, test_acc)
-    #
-    #     plt.clf()
-    #     x = np.array(range(1, len(loss_list)+1))
-    #     plt.plot(x, loss_list)
-    #     plt.xlabel("iter")
-    #     plt.ylabel("loss")
-    #     plt.draw()
-    #     plt.pause(0.05)
+    network.backward(y, t)
+
+    for layer in network.layers:
+        layer.W -= learning_rate * layer.dW
+        layer.b -= learning_rate * layer.db
+    
+    loss_list.append(network.loss(y, t))
+    
+    if i!=0 and i % iter_per_epoch == 0:
+        plt.clf()
+
+        # plt.subplot(1, 2, 1)
+        x = np.array(range(1, len(loss_list)+1))
+        plt.plot(x, loss_list)
+        plt.xlabel("iter")
+        plt.ylabel("loss")
+
+        # train_acc = network.accuracy(x_train, t_train)
+        test_acc = network.accuracy(x_test, t_test)
+        print(test_acc)
+        # train_acc_list.append(train_acc)
+        # test_acc_list.append(test_acc)
+        # x = np.array(range(1, len(train_acc_list)+1))
+        # plt.subplot(1, 2, 2)
+        # plt.plot(x, train_acc_list)
+        # plt.plot(x, test_acc_list)
+        # plt.xlabel("iter")
+        # plt.ylabel("acc")
+        # plt.legend()
+
+        plt.draw()
+        plt.pause(0.01)
+
+x = np.array(range(1, len(loss_list)+1))
+plt.plot(x, loss_list)
+plt.xlabel("iter")
+plt.ylabel("loss")
+plt.savefig("./power_of_cnn.png")
+
+print("--------- last result -----------")
+print("test_acc: {}".format(network.accuracy(x_test, t_test)))
+# print("train_acc: {}".format(network.accuracy(x_train, t_train)))
+print("---------------------------------")

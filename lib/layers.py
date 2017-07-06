@@ -2,7 +2,7 @@
 
 import numpy as np
 from lib.common_functions import sigmoid, softmax, relu
-from lib.utils import im2col
+from lib.utils import im2col, col2im
 
 class Affine:
     def __init__(self, input_size, output_size, activation_function,
@@ -50,7 +50,7 @@ class Affine:
 
         dx = np.dot(dy, self.W.T)
 
-        return dx
+        return dx.reshape(self.org_shape)
 
     def set_params(self, W, b):
         self.W = W
@@ -104,7 +104,7 @@ class Conv:
         for af in self.activation_functions:
             y = af.forward(y)
 
-        return y.reshape(BS, -1)
+        return y
 
     def backward(self, dy):
         for af in reversed(self.activation_functions):
@@ -117,7 +117,7 @@ class Conv:
         self.dW = np.dot(self.col_x.T, dy)
         self.dW = self.dW.transpose(1, 0).reshape(FN, C, FH, FW)
 
-        dcol = np.dot(dout, self.col_W.T)
-        dx = col2im(dcol, self.x.shape, FH, FW, self.stride, self.pad)
+        dcol = np.dot(dy, self.col_W.T)
+        dx = col2im(dcol, self.x.shape, FH, FW, self.S, self.P)
 
         return dx

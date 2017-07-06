@@ -4,7 +4,7 @@ import sys, os
 sys.path.append(os.pardir)
 import numpy as np
 from lib.common_functions import *
-from lib.utils import im2col
+from lib.utils import im2col, col2im
 
 class Sigmoid:
     def __init__(self):
@@ -139,23 +139,26 @@ class Pooling:
         OH = int( (IH+2*self.P-self.FH) / self.S + 1 )
         OW = int( (IW+2*self.P-self.FW) / self.S + 1 )
 
-        X = im2col(x, self.FH, self.FW, self.S, self.P)\
-            .reshape(-1, self.FW*self.FH)
+        col_x = im2col(x, self.FH, self.FW, self.S, self.P)
+        col_x = col_x.reshape(-1, self.FW*self.FH)
 
-        Y = np.max(X, axis = 1)
-        y = Y.reshape(BS, OH, OW, C).transpose(0, 3, 1, 2)
+        arg_max = np.argmax(col_x, axis=1)
+        col_y = np.max(col_x, axis = 1)
+        y = col_y.reshape(BS, OH, OW, C).transpose(0, 3, 1, 2)
 
+        self.x = x
+        self.arg_max = arg_max
         return y
 
     def backward(self, dy):
         dy = dy.transpose(0, 2, 3, 1)
         
-        pool_size = self.pool_h * self.pool_w
+        pool_size = self.FH * self.FW
         dmax = np.zeros((dy.size, pool_size))
         dmax[np.arange(self.arg_max.size), self.arg_max.flatten()] = dy.flatten()
         dmax = dmax.reshape(dy.shape + (pool_size,)) 
         
         dcol = dmax.reshape(dmax.shape[0] * dmax.shape[1] * dmax.shape[2], -1)
-        dx = col2im(dcol, self.x.shape, self.pool_h, self.pool_w, self.stride, self.pad)
+        dx = col2im(dcol, self.x.shape, self.FH, self.FW, self.S, self.P)
         
         return dx
