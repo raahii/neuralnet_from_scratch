@@ -148,4 +148,14 @@ class Pooling:
         return y
 
     def backward(self, dy):
-        pass
+        dy = dy.transpose(0, 2, 3, 1)
+        
+        pool_size = self.pool_h * self.pool_w
+        dmax = np.zeros((dy.size, pool_size))
+        dmax[np.arange(self.arg_max.size), self.arg_max.flatten()] = dy.flatten()
+        dmax = dmax.reshape(dy.shape + (pool_size,)) 
+        
+        dcol = dmax.reshape(dmax.shape[0] * dmax.shape[1] * dmax.shape[2], -1)
+        dx = col2im(dcol, self.x.shape, self.pool_h, self.pool_w, self.stride, self.pad)
+        
+        return dx

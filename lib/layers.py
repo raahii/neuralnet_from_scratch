@@ -91,10 +91,14 @@ class Conv:
         OW = int( (IW+2*self.P-FW) / self.S + 1 )
         
         # forward
-        X = im2col(x, FH, FW, self.S, self.P)
-        W = self.W.reshape(-1, FN)
-        Y = np.dot(X, W) + self.b
-        y = Y.reshape(BS, OW, OH, -1).transpose(0, 3, 1, 2)
+        col_x = im2col(x, FH, FW, self.S, self.P)
+        col_W = self.W.reshape(-1, FN)
+        col_y = np.dot(col_x, col_W) + self.b
+        y = col_y.reshape(BS, OW, OH, -1).transpose(0, 3, 1, 2)
+
+        self.x = x
+        self.col_x = col_x
+        self.col_W = col_W
 
         # apply avtivation functions
         for af in self.activation_functions:
@@ -103,6 +107,17 @@ class Conv:
         return y.reshape(BS, -1)
 
     def backward(self, dy):
-        # for af in reversed(self.activation_functions):
-        #     dy = af.backward(dy)
-        pass
+        for af in reversed(self.activation_functions):
+            dy = af.backward(dy)
+
+        FN, C, FH, FW = self.W.shape
+        dy = dy.transpose(0, 2, 3, 1).reshape(-1, FN)
+
+        self.db = np.sum(dy, axis=0)
+        self.dW = np.dot(self.col_x.T, dy)
+        self.dW = self.dW.transpose(1, 0).reshape(FN, C, FH, FW)
+
+        dcol = np.dot(dout, self.col_W.T)
+        dx = col2im(dcol, self.x.shape, FH, FW, self.stride, self.pad)
+
+        return dx
