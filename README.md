@@ -20,7 +20,21 @@
 
 - [x] N layer neural network
   
+  - [x] xavier, he initial value
+
+  - [x] batch-normalization
+
+  - [x] dropout
+
 - [ ] Convolutional neural network
+
+  - [ ] Convolution
+
+  - [ ] Pooling
+
+- [ ] AlexNet
+
+  - [ ] Local Response Normalization
 
 - [ ] VGG16
 
