@@ -197,7 +197,7 @@ class LRN:
 
         y = x * d3
         y = y.reshape(C, BN, IH, IW).transpose(1, 0, 2, 3)
-        
+
         self.x = x
         self.d2 = d2
         self.d3 = d3
@@ -214,7 +214,7 @@ class LRN:
         dd3 = self.x * dy
         dd2 = dd3 * -self.beta * np.power(self.d2, -(self.beta+1))
         dx += dd2 * 2.0 * self.alpha * self.sums
-        
+
         dx = dx.reshape(C, BN, IH, IW).transpose(1, 0, 2, 3)
 
         return dx

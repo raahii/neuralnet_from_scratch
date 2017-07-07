@@ -20,15 +20,22 @@ network = MyNeuralNet(
             cost_function = cross_entropy_error
         )
 
-conv1 = Conv( activation_function = [Relu()], filter_shape = (96, 1, 4, 4), stride = 4)
-conv2 = Conv( activation_function = [Relu(), LRN(), Pooling(2, 2, stride=1)], filter_shape = (256, 96, 3, 3) )
-# Pooling(3, 2)
-affine1 = Affine( 256*4*4, 10, Softmax(), "he" )
+conv1 = Conv( activation_function = [Relu()], filter_shape = (96, 1, 4, 4))
+conv2 = Conv( activation_function = [Relu(), LRN(), Pooling(3, 3), Dropout(0.5)], filter_shape = (256,  96, 3, 3) )
+conv3 = Conv( activation_function = [Relu(), LRN(), Pooling(3, 3), Dropout(0.6)], filter_shape = (384, 256, 3, 3) )
+conv4 = Conv( activation_function = [Relu(), LRN(), Pooling(3, 3), Dropout(0.7)], filter_shape = (384, 384, 3, 3) )
+conv5 = Conv( activation_function = [Relu(), LRN(), Pooling(3, 3), Dropout(0.8)], filter_shape = (256, 384, 3, 3) )
+out_size= 9
+affine1 = Affine( 256*out_size**2, 256*out_size**2, Relu(), "he" )
+affine2 = Affine( 256*out_size**2, 10, Softmax(), "he" )
 
 network.add_layer(conv1)
 network.add_layer(conv2)
+network.add_layer(conv3)
+network.add_layer(conv4)
+network.add_layer(conv5)
 network.add_layer(affine1)
-# network.add_layer(affine2)
+network.add_layer(affine2)
 
 # 学習
 train_size = x_train.shape[0]
