@@ -26,7 +26,7 @@ lr = 0.1
 
 loss_list = []
 
-for i in range(iter_num):
+for i in tqdm(range(iter_num)):
     batch_mask = np.random.choice(train_size, batch_size)
     x_batch = x_train[batch_mask]
     t_batch = t_train[batch_mask]

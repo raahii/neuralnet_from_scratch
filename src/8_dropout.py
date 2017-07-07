@@ -21,16 +21,17 @@ networks = {
         }
 
 # レイヤを追加
-network = networks["normal"]
-network.add_layer(Affine(28*28, 100 , [Relu(), Dropout(0.8)], "he"))
-network.add_layer(Affine(100   , 100, [Relu(), Dropout(0.8)], "he"))
-network.add_layer(Affine(100   , 100, [Relu(), Dropout(0.8)], "he"))
-network.add_layer(Affine(100   , 100, [Relu(), Dropout(0.8)], "he"))
-network.add_layer(Affine(100   , 100, [Relu(), Dropout(0.8)], "he"))
+network = networks["dropout"]
+network.add_layer(Affine(28*28, 100 , [Relu()], "he"))
+network.add_layer(Affine(100   , 100, [Relu()], "he"))
+network.add_layer(Affine(100   , 100, [Relu()], "he"))
+network.add_layer(Affine(100   , 100, [Relu()], "he"))
+network.add_layer(Affine(100   , 100, [Relu()], "he"))
+network.add_layer(Affine(100   , 100, [Relu()], "he"))
 network.add_layer(Affine(100   , 100, [Relu(), Dropout(0.8)], "he"))
 network.add_layer(Affine(100   , 10 , Softmax(), "he"))
 
-network = networks["dropout"]
+network = networks["normal"]
 network.add_layer(Affine(28*28, 100 , Relu(), "he"))
 network.add_layer(Affine(100  , 100 , Relu(), "he"))
 network.add_layer(Affine(100  , 100 , Relu(), "he"))
@@ -42,7 +43,7 @@ network.add_layer(Affine(100   , 10 , Softmax(), "he"))
 
 # 学習
 train_size = 100
-batch_size = 50
+batch_size = 20
 
 iter_per_epoch = max(int(train_size / batch_size), 1)
 
@@ -90,11 +91,13 @@ for i in range(iters_num):
         plt.suptitle("Comparison parameter learning with dropout or not\n(top: with dropout, bottom: without dropout)")
         for i, name in enumerate(networks.keys()):
             plt.subplot(2, 2, l*i+1)
+            plt.title(name)
             x = np.array(range(1, len(loss_list[name])+1))
             plt.plot(x, loss_list[name])
             plt.xlabel("epoch")
             plt.ylabel("loss")
 
+            plt.title(name)
             plt.subplot(2, 2, l*i+l)
             x = np.array(range(1, len(train_acc_list[name])+1))
             plt.plot(x, train_acc_list[name], label="train_acc")

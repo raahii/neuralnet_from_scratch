@@ -58,7 +58,6 @@ class Affine:
 
 class Conv:
     def __init__(self, activation_function,
-                 # input_shape,
                  filter_shape, stride=1, padding=0,
                  init_method="gaussian", train_flg = True):
         

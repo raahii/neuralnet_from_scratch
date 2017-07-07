@@ -12,7 +12,6 @@ from lib.common_functions import cross_entropy_error
 from lib.layers import Affine, Conv
 from lib.activation_functions import *
 
-
 # データセットのロード
 (x_train, t_train), (x_test, t_test) = load_mnist(normalize=True, flatten=False, one_hot_label=True)
 
@@ -21,29 +20,15 @@ network = MyNeuralNet(
             cost_function = cross_entropy_error
         )
 
-# レイヤを追加
-C, IH, IW = 1, 28, 28
+conv1 = Conv( activation_function = [Relu()], filter_shape = (96, 1, 4, 4), stride = 4)
+conv2 = Conv( activation_function = [Relu(), LRN(), Pooling(2, 2, stride=1)], filter_shape = (256, 96, 3, 3) )
+# Pooling(3, 2)
+affine1 = Affine( 256*4*4, 10, Softmax(), "he" )
 
-P, S = 0, 1
-FN, FH, FW = 30, 5, 5
-OH = int( (IH + 2*P - FH) / S + 1 )
-OW = int( (IW + 2*P - FW) / S + 1 )
-
-P, S = 0, 2
-PH, PW = 2, 2
-OH = int( (OH + 2*P - PH) / S + 1 )
-OW = int( (OW + 2*P - PW) / S + 1 )
-
-conv_output_size = FN*OH*OW
-
-conv = Conv( activation_function = [Relu(), Pooling(PH, PW, padding=P, stride=S)],
-             filter_shape = (FN, C, FH, FW) )
-affine1 = Affine( conv_output_size, 100, Relu(), "he" )
-affine2 = Affine( 100, 10, Softmax(), "he" )
-
-network.add_layer(conv)
+network.add_layer(conv1)
+network.add_layer(conv2)
 network.add_layer(affine1)
-network.add_layer(affine2)
+# network.add_layer(affine2)
 
 # 学習
 train_size = x_train.shape[0]
@@ -62,7 +47,7 @@ test_acc_list = []
 
 for i in tqdm(range(iters_num)):
     batch_mask = np.random.choice(train_size, batch_size)
-    
+
     x = x_train[batch_mask]
     t = t_train[batch_mask]
 
@@ -72,9 +57,9 @@ for i in tqdm(range(iters_num)):
     for layer in network.layers:
         layer.W -= learning_rate * layer.dW
         layer.b -= learning_rate * layer.db
-    
+
     loss_list.append(network.loss(y, t))
-    
+
     if i != 0 and i % iter_per_epoch == 0:
         plt.clf()
 

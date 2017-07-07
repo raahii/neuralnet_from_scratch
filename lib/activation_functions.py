@@ -122,13 +122,13 @@ class Dropout:
             self.mask = np.random.rand(*x.shape) > self.dropout_rate
             return x * self.mask
         else:
-            return x * (1.0 - self.dropout_rate)
+            return x
 
     def backward(self, dy):
         return dy * self.mask
 
 class Pooling:
-    def __init__(self, FH, FW, stride=1, padding=0):
+    def __init__(self, FH, FW, padding=0, stride=1):
         self.FH = FH
         self.FW = FW
         self.S = stride
@@ -148,6 +148,7 @@ class Pooling:
 
         self.x = x
         self.arg_max = arg_max
+
         return y
 
     def backward(self, dy):
@@ -161,4 +162,59 @@ class Pooling:
         dcol = dmax.reshape(dmax.shape[0] * dmax.shape[1] * dmax.shape[2], -1)
         dx = col2im(dcol, self.x.shape, self.FH, self.FW, self.S, self.P)
         
+        return dx
+
+class LRN:
+    """
+    Local Response Normalization
+    """
+    def __init__(self, alpha=1e-4, k=2, beta=0.75, n=5):
+        self.alpha = alpha
+        self.k = k
+        self.beta = beta
+        self.n = n
+        self.r = int(self.n / 2.0)
+        
+        self.x = None
+        self.d2 = None
+        self.d3 = None
+        self.sums = None
+
+    def forward(self, x):
+        BN, C, IH, IW = x.shape
+        x = x.transpose(1, 0, 2, 3).reshape(C, BN, -1)
+
+        _sums = np.sum(np.power(x, 2), axis=2)
+        sums = np.zeros( (C, BN, ) )
+        for i in range(C):
+            s = max(0, i-self.r)
+            e = min(C-1, i+self.r)
+            sums[i] = np.sum(_sums[s:e], axis=0)
+
+        sums = sums.reshape((C, BN, 1))
+        d2 = self.k + self.alpha * sums
+        d3 = np.power(d2, -self.beta)
+
+        y = x * d3
+        y = y.reshape(C, BN, IH, IW).transpose(1, 0, 2, 3)
+        
+        self.x = x
+        self.d2 = d2
+        self.d3 = d3
+        self.sums = sums
+
+        return y
+
+    def backward(self, dy):
+        BN, C, IH, IW = dy.shape
+        dy = dy.transpose(1, 0, 2, 3).reshape(C, BN, -1)
+
+        dx = dy * self.d3
+
+        dd3 = self.x * dy
+        dd2 = dd3 * -self.beta * np.power(self.d2, -(self.beta+1))
+        dx += dd2 * 2.0 * self.alpha * self.sums
+        
+        dx = dx.reshape(C, BN, IH, IW).transpose(1, 0, 2, 3)
+
         return dx
