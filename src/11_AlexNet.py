@@ -65,8 +65,7 @@ for i in tqdm(range(iters_num)):
     network.backward(y, t)
 
     for layer in network.layers:
-        layer.W -= learning_rate * layer.dW
-        layer.b -= learning_rate * layer.db
+        layer.update(learning_rate)
 
     loss = network.loss(y, t)
     # print(loss)

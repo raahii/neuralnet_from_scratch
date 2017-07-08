@@ -1,7 +1,9 @@
 # coding : utf-8
 
+import sys, os
+sys.path.append(os.pardir)
 import numpy as np
-from lib.common_functions import sigmoid, softmax, relu
+from lib.common_functions import *
 from lib.utils import im2col, col2im
 
 class Affine:
@@ -55,6 +57,10 @@ class Affine:
     def set_params(self, W, b):
         self.W = W
         self.b = b
+
+    def update(self, lr):
+        self.W -= lr * self.dW
+        self.b -= lr * self.db
 
 class Conv:
     def __init__(self, activation_function,
@@ -118,5 +124,8 @@ class Conv:
 
         dcol = np.dot(dy, self.col_W.T)
         dx = col2im(dcol, self.x.shape, FH, FW, self.S, self.P)
-
         return dx
+
+    def update(self, lr):
+        self.W -= lr * self.dW
+        self.b -= lr * self.db

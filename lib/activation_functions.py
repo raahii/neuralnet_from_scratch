@@ -22,6 +22,9 @@ class Sigmoid:
         
         return dx
 
+    def update(self, lr = 0.1):
+        pass
+
 class Relu:
     def __init__(self):
         self.x = None
@@ -39,6 +42,9 @@ class Relu:
 
         return dx
 
+    def update(self, lr = 0.1):
+        pass
+
 class Softmax:
     def __init__(self):
         self.x = None
@@ -55,11 +61,13 @@ class Softmax:
         
         return dx
 
+    def update(self, lr = 0.1):
+        pass
+
 class BatchNormalization:
     def __init__(self, lr=0.1):
         self.eps        = 1e-7
         self.batch_size = None
-        self.lr         = lr
 
         self.x      = None
         self.x_norm = None
@@ -107,11 +115,11 @@ class BatchNormalization:
         dx = dxc - dmu / self.batch_size
         # dx = dxc * ( 1.0 - 1.0 / self.batch_size)
 
-        # TODO: should refactor design
-        self.gamma -= self.lr * self.dgamma
-        self.beta  -= self.lr * self.dbeta
-
         return dx
+
+    def update(self, lr = 0.1):
+        self.gamma -= lr * self.dgamma
+        self.beta  -= lr * self.dbeta
 
 class Dropout:
     def __init__(self, dropout_rate=0.5):
@@ -126,6 +134,9 @@ class Dropout:
 
     def backward(self, dy):
         return dy * self.mask
+
+    def update(self, lr = 0.1):
+        pass
 
 class Pooling:
     def __init__(self, FH, FW, padding=0, stride=1):
@@ -163,6 +174,9 @@ class Pooling:
         dx = col2im(dcol, self.x.shape, self.FH, self.FW, self.S, self.P)
         
         return dx
+
+    def update(self, lr = 0.1):
+        pass
 
 class LRN:
     """
@@ -228,3 +242,6 @@ class LRN:
         dx = dx.reshape(C, BN, IH, IW).transpose(1, 0, 2, 3)
 
         return dx
+
+    def update(self, lr = 0.1):
+        pass
