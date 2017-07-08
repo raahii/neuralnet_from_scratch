@@ -188,7 +188,7 @@ class LRN:
         sums = np.zeros( (C, BN, ) )
         for i in range(C):
             s = max(0, i-self.r)
-            e = min(C-1, i+self.r)
+            e = min(C, i+self.r)
             sums[i] = np.sum(_sums[s:e], axis=0)
 
         sums = sums.reshape((C, BN, 1))
@@ -213,7 +213,17 @@ class LRN:
 
         dd3 = self.x * dy
         dd2 = dd3 * -self.beta * np.power(self.d2, -(self.beta+1))
-        dx += dd2 * 2.0 * self.alpha * self.sums
+        
+        # dd1 = np.zeros_like(dd2)
+        # ones = np.ones((BN, IH*IW))
+
+        # TODO: should simplify
+        # for i in range(C):
+        #     s = max(0, i-self.r)
+        #     e = min(C, i+self.r)
+        #     dd1[s:e] += ones
+
+        dx += dd2 * 2.0 * self.alpha * self.sums # dd1 
 
         dx = dx.reshape(C, BN, IH, IW).transpose(1, 0, 2, 3)
 
