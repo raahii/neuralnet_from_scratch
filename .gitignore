@@ -10,3 +10,4 @@ dataset/*
 my_train_neuralnet.py
 personal
 fig
+*.pkl

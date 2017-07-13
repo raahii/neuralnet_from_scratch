@@ -26,17 +26,38 @@
 
   - [x] dropout
 
-- [ ] Convolutional neural network
+- [x] Convolutional neural network
 
-  - [ ] Convolution
+  - [x] Convolution
 
-  - [ ] Pooling
+  - [x] Pooling
 
-- [ ] AlexNet
+- [x] AlexNet
 
-  - [ ] Local Response Normalization
+  - [x] Local Response Normalization
 
 - [ ] VGG16
+
+
+## MNISTベンチマーク
+
+### 実験条件
+
+|条件|値|
+:-:|:-:
+トレーニングデータ|60,000件
+テストデータ|10,000件
+バッチサイズ|100
+エポック数|20エポック
+
+### 結果
+
+|名前|対応スクリプト|train acc|test acc|
+|:--:|:--:|:--:|:--:|
+|3層ニューラルネット|`src/04_back_propagation.py`|0.988|0.971|
+
+
+
 
 ## 参考
 
