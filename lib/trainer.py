@@ -46,7 +46,7 @@ class Trainer:
             x = x_train[batch_mask]
             t = t_train[batch_mask]
 
-            y = network.forward(x)
+            y = network.forward(x, train_flg=True)
             network.backward(y, t)
 
             for layer in network.layers:
@@ -83,13 +83,14 @@ class Trainer:
         self.test_acc_list = test_acc_list
         self.epoch_num = epoch_num
 
-    def savefig(self, path):
+    def savefig(self, title, path):
         loss_list = self.loss_list
         train_acc_list = self.train_acc_list
         test_acc_list = self.test_acc_list
         epoch_num = self.epoch_num
-
-        plt.clf()
+        
+        plt.figure(figsize=(20,10))
+        plt.suptitle(title)
         plt.subplot(1, 2, 1)
         x = np.array(range(1, len(loss_list)+1))
         plt.plot(x, loss_list)
@@ -107,5 +108,3 @@ class Trainer:
 
         plt.savefig(path)
         print("train acc: {}, test acc: {}".format(train_acc_list[-1], test_acc_list[-1]))
-
-        

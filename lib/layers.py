@@ -30,7 +30,7 @@ class Affine:
         return coeffs[method_name] * \
                np.random.randn(self.input_size, self.output_size)
 
-    def forward(self, x, train_flg=True):
+    def forward(self, x, train_flg):
         self.org_shape = x.shape
         self.x = x.reshape(x.shape[0], -1)
 
@@ -79,7 +79,7 @@ class Conv:
 
         return coeffs[method_name] * gaussian_rands
 
-    def forward(self, x, train_flg=True):
+    def forward(self, x, train_flg):
         BS, IC, IH, IW = x.shape
         FN, C, FH, FW  = self.W.shape
         OH = int( (IH+2*self.P-FH) / self.S + 1 )
@@ -118,7 +118,7 @@ class Sigmoid:
         self.x = None
         self.y = None
 
-    def forward(self, x, train_flg=True):
+    def forward(self, x, train_flg):
         self.x = x
         self.y = sigmoid(x)
 
@@ -137,7 +137,7 @@ class Relu:
         self.x = None
         self.y = None
 
-    def forward(self, x, train_flg=True):
+    def forward(self, x, train_flg):
         self.x = x
         self.y = relu(self.x)
 
@@ -156,7 +156,7 @@ class Softmax:
     def __init__(self):
         self.x = None
 
-    def forward(self, x, train_flg=True):
+    def forward(self, x, train_flg):
         self.x = x
         y = softmax(self.x)
 
@@ -187,7 +187,7 @@ class BatchNormalization:
         self.dbeta  = None
         self.dgamma = None
 
-    def forward(self, x, train_flg=True):
+    def forward(self, x, train_flg):
         if x.ndim != 2:
             self.x = x.reshape(x.shape[0], -1)
         else:
@@ -232,7 +232,7 @@ class Dropout:
     def __init__(self, dropout_rate=0.5):
         self.dropout_rate = dropout_rate
 
-    def forward(self, x, train_flg=True):
+    def forward(self, x, train_flg):
         if train_flg:
             self.mask = np.random.rand(*x.shape) > self.dropout_rate
             return x * self.mask
@@ -252,7 +252,7 @@ class Pooling:
         self.S = stride
         self.P = padding
 
-    def forward(self, x, train_flg=True):
+    def forward(self, x, train_flg):
         BS, C, IH, IW = x.shape
         OH = int( (IH+2*self.P-self.FH) / self.S + 1 )
         OW = int( (IW+2*self.P-self.FW) / self.S + 1 )
@@ -301,7 +301,7 @@ class LRN:
         self.d3 = None
         self.sums = None
 
-    def forward(self, x, train_flg=True):
+    def forward(self, x, train_flg):
         BN, C, IH, IW = x.shape
         x = x.transpose(1, 0, 2, 3).reshape(C, BN, -1)
 

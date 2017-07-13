@@ -16,10 +16,10 @@ class MyNeuralNet:
 
         return self.cost_function(y, t)
 
-    def forward(self, x):
+    def forward(self, x, train_flg=False):
         y = x
         for layer in self.layers:
-            y = layer.forward(y, train_flg=True)
+            y = layer.forward(y, train_flg)
 
         return y
 
