@@ -26,7 +26,7 @@ class Trainer:
         self.test_acc_list = None
 
     def train(self, lr, epoch_num, batch_size,
-              debug=True, plot=True):
+              debug=True, plot=True, for_cnn=False):
         train_size = self.train_size
         x_train = self.x_train
         t_train = self.t_train
@@ -54,7 +54,10 @@ class Trainer:
 
             if i != 0 and i % iter_per_epoch == 0:
                 loss_list.append(network.loss(y, t))
-                train_acc = network.accuracy(x_train, t_train)
+                if for_cnn:
+                    train_acc = network.accuracy(x_train[:10000], t_train[:10000])
+                else:
+                    train_acc = network.accuracy(x_train, t_train)
                 test_acc = network.accuracy(x_test, t_test)
                 train_acc_list.append(train_acc)
                 test_acc_list.append(test_acc)

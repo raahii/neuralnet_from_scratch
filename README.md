@@ -53,10 +53,11 @@
 
 |名前|対応スクリプト|エポック数|train acc|test acc|
 |:--:|:--:|:--:|:--:|:--:|
-|3層ニューラルネット|20|`src/04_back_propagation.py`|0.988|0.971|
-|5層ニューラルネット|20|`src/05_deeper_network.py`|0.9962|0.9768|
-|5層ニューラルネット<br>（BN有り）|20|`src/07_batch_normalization.py`|0.9980|0.9737|
-|5層ニューラルネット<br>（BN, Dropout有り）|100|`src/08_dropout.py`|0.9957|0.9767|
+|3層ニューラルネット|`src/04_back_propagation.py`|20|0.988|0.971|
+|5層ニューラルネット|`src/05_deeper_network.py`|20|0.9962|0.9768|
+|5層ニューラルネット<br>（BN有り）|`src/07_batch_normalization.py`|20|0.9980|0.9737|
+|5層ニューラルネット<br>（BN, Dropout有り）|`src/08_dropout.py`|100|0.9957|0.9767|
+|簡単なCNN|`src/10_CNN.py`|20|0.9972|0.9834|
 
 ## 参考
 
