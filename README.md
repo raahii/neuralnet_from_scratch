@@ -55,6 +55,10 @@
 |名前|対応スクリプト|train acc|test acc|
 |:--:|:--:|:--:|:--:|
 |3層ニューラルネット|`src/04_back_propagation.py`|0.988|0.971|
+|5層ニューラルネット|`src/05_deeper_network.py`|0.9962|0.9768|
+
+
+
 
 
 
