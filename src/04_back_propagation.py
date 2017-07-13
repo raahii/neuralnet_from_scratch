@@ -60,7 +60,8 @@ for i in tqdm(range(iters)):
         plt.draw()
         plt.pause(0.05)
 
-plt.clf()
+plt.figure(figsize=(20,10))
+plt.suptitle("three_layer_net")
 plt.subplot(1, 2, 1)
 x = np.array(range(1, len(loss_list)+1))
 plt.plot(x, loss_list)
@@ -76,5 +77,5 @@ plt.ylabel("acc")
 plt.xlim(1, epoch_num+1)
 plt.legend()
 
-plt.savefig("../data/3_layer_net.png")
+plt.savefig("../data/three_layer_net.png")
 print("train acc: {}, test acc: {}".format(train_acc_list[-1], test_acc_list[-1]))

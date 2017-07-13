@@ -35,4 +35,4 @@ network.add_layer(Softmax())
 # 学習
 trainer = Trainer(network, x_train, t_train, x_test, t_test)
 trainer.train(lr=0.1, epoch_num=20, batch_size=100)
-trainer.savefig("../data/batch_normalization.png")
+trainer.savefig("batch_normalization", "../data/batch_normalization.png")
