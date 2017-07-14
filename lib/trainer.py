@@ -8,7 +8,6 @@ from lib.layers import *
 
 import numpy as np
 from tqdm import tqdm
-from joblib import Parallel, delayed
 import matplotlib.pyplot as plt
 plt.style.use("ggplot")
 
@@ -56,10 +55,18 @@ class Trainer:
             if i != 0 and i % iter_per_epoch == 0:
                 loss_list.append(network.loss(y, t))
                 if for_cnn:
-                    train_acc = network.accuracy(x_train[:10000], t_train[:10000])
+                    bs = 100
+                    dsize = 10000
+                    itr = int(dsize/bs)
+                    train_acc = 0
+                    test_acc = 0
+                    for i in range(0, dsize, bs):
+                        train_acc += network.accuracy(x_train[i:i+bs], t_train[i:i+bs])
+                        test_acc += network.accuracy(x_test[i:i+bs], t_test[i:i+bs])
+                    train_acc /= itr
+                    test_acc /= itr
                 else:
                     train_acc = network.accuracy(x_train, t_train)
-                test_acc = network.accuracy(x_test, t_test)
                 train_acc_list.append(train_acc)
                 test_acc_list.append(test_acc)
 
