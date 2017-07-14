@@ -8,6 +8,7 @@ from lib.layers import *
 
 import numpy as np
 from tqdm import tqdm
+from joblib import Parallel, delayed
 import matplotlib.pyplot as plt
 plt.style.use("ggplot")
 
