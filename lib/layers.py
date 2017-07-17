@@ -290,10 +290,10 @@ class LRN:
     Local Response Normalization
     """
     def __init__(self, alpha=1e-4, k=2, beta=0.75, n=5):
-        self.alpha = alpha
+        self.alpha = alpha 
         self.k = k
         self.beta = beta
-        self.n = n
+        self.n = n  # normalization range
         self.r = int(self.n / 2.0)
         
         self.x = None
@@ -307,22 +307,26 @@ class LRN:
 
         _sums = np.sum(np.power(x, 2), axis=2)
         sums = np.zeros( (C, BN, ) )
+        d1 = np.zeros( (C, ) )
         for i in range(C):
             s = max(0, i-self.r)
-            e = min(C, i+self.r)
+            e = min(C-1, i+self.r)
+            d1[s:e] += 1
             sums[i] = np.sum(_sums[s:e], axis=0)
+        
 
         sums = sums.reshape((C, BN, 1))
-        d2 = self.k + self.alpha * sums
-        d3 = np.power(d2, -self.beta)
+        d3 = self.k + self.alpha * sums
+        d4 = np.power(d3, -self.beta)
 
         y = x * d3
         y = y.reshape(C, BN, IH, IW).transpose(1, 0, 2, 3)
 
         self.x = x
-        self.d2 = d2
+        self.d1 = d1.reshape(-1, 1, 1)
+        self.d2 = sums
         self.d3 = d3
-        self.sums = sums
+        self.d4 = d4
 
         return y
 
@@ -330,21 +334,12 @@ class LRN:
         BN, C, IH, IW = dy.shape
         dy = dy.transpose(1, 0, 2, 3).reshape(C, BN, -1)
 
-        dx = dy * self.d3
-
-        dd3 = self.x * dy
-        dd2 = dd3 * -self.beta * np.power(self.d2, -(self.beta+1))
-        
-        # dd1 = np.zeros_like(dd2)
-        # ones = np.ones((BN, IH*IW))
-
-        # TODO: should simplify
-        # for i in range(C):
-        #     s = max(0, i-self.r)
-        #     e = min(C, i+self.r)
-        #     dd1[s:e] += ones
-
-        dx += dd2 * 2.0 * self.alpha * self.sums # dd1 
+        dx = dy * self.x
+        dx *= -self.beta * np.power(self.d3, -(self.beta+1))
+        dx *= self.alpha * self.d2
+        dx *= self.d1
+        dx *= self.x * 2.0
+        dx = dx + dy * self.d4
 
         dx = dx.reshape(C, BN, IH, IW).transpose(1, 0, 2, 3)
 
