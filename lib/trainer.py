@@ -67,6 +67,7 @@ class Trainer:
                     test_acc /= itr
                 else:
                     train_acc = network.accuracy(x_train, t_train)
+                    test_acc = network.accuracy(x_test, t_test)
                 train_acc_list.append(train_acc)
                 test_acc_list.append(test_acc)
 
