@@ -1,5 +1,5 @@
 # coding : utf-8
-import sys, os
+import sys, os, subprocess
 sys.path.append(os.pardir)
 from dataset.mnist import load_mnist
 from lib.common_functions import cross_entropy_error
@@ -8,6 +8,12 @@ from lib.layers import *
 
 import numpy as np
 from tqdm import tqdm
+
+os_name = subprocess.check_output("uname").decode("utf-8").strip()
+if os_name == "Linux":
+    import matplotlib
+    matplotlib.use("Agg")
+
 import matplotlib.pyplot as plt
 plt.style.use("ggplot")
 
@@ -56,7 +62,7 @@ class Trainer:
                 loss_list.append(network.loss(y, t))
                 if for_cnn:
                     bs = 100
-                    dsize = 10000
+                    dsize = 1000
                     itr = int(dsize/bs)
                     train_acc = 0
                     test_acc = 0
@@ -70,25 +76,28 @@ class Trainer:
                     test_acc = network.accuracy(x_test, t_test)
                 train_acc_list.append(train_acc)
                 test_acc_list.append(test_acc)
+                
+                if plot:
+                    plt.clf()
+                    plt.subplot(1, 2, 1)
+                    x = np.array(range(1, len(loss_list)+1))
+                    plt.plot(x, loss_list)
+                    plt.xlabel("epoch")
+                    plt.ylabel("loss")
+                    plt.xlim(1, epoch_num+1)
 
-                plt.clf()
-                plt.subplot(1, 2, 1)
-                x = np.array(range(1, len(loss_list)+1))
-                plt.plot(x, loss_list)
-                plt.xlabel("epoch")
-                plt.ylabel("loss")
-                plt.xlim(1, epoch_num+1)
+                    plt.subplot(1, 2, 2)
+                    plt.plot(x, train_acc_list, "r", label="train_acc")
+                    plt.plot(x, test_acc_list, "b", label="test_acc")
+                    plt.xlabel("epoch")
+                    plt.ylabel("acc")
+                    plt.xlim(1, epoch_num+1)
+                    plt.legend()
 
-                plt.subplot(1, 2, 2)
-                plt.plot(x, train_acc_list, "r", label="train_acc")
-                plt.plot(x, test_acc_list, "b", label="test_acc")
-                plt.xlabel("epoch")
-                plt.ylabel("acc")
-                plt.xlim(1, epoch_num+1)
-                plt.legend()
-
-                plt.draw()
-                plt.pause(0.05)
+                    plt.draw()
+                    plt.pause(0.05)
+                else:
+                    print("\n", train_acc, test_acc)
 
         self.loss_list = loss_list
         self.train_acc_list = train_acc_list
